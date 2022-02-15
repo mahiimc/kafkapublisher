@@ -2,6 +2,7 @@ package com.publisher.root.controller;
 
 
 import com.publisher.root.producer.Producer;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,9 @@ public class ProducerController {
     private Producer producer;
 
     public  volatile  HashMap<String, Object> hm = new HashMap<>();
-
+    JSONObject jsonData ;
     @GetMapping("/{message}")
-    public void publishMessage(@PathVariable("message")  String message){
+    public JSONObject publishMessage(@PathVariable("message")  String message){
 
         try
         {
@@ -29,6 +30,7 @@ public class ProducerController {
                     try {
                         ResponseEntity<HashMap> responseData = restTemplate.exchange("https://reqres.in/api/users/3", HttpMethod.GET, null, HashMap.class);
                        // Response response = new ObjectMapper().convertValue(responseData.getBody().get("data"), Response.class);
+                        jsonData = new JSONObject(responseData.getBody());
                         hm.put("Response", responseData.getBody().get("data"));
                         System.out.println(hm);
                         hm.notify();
@@ -64,6 +66,7 @@ public class ProducerController {
         catch (Exception ex){
 
         }
+        return jsonData;
 
     }
 }
